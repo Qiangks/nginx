@@ -16,7 +16,7 @@ ngx_found=no
 
 for ngx_try in $ngx_type $ngx_types
 do
-
+    # NGX_INCLUDE_INTTYPES_H: #include <inttypes.h>
     cat << END > $NGX_AUTOTEST.c
 
 #include <sys/types.h>

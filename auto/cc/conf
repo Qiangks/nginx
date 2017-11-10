@@ -30,9 +30,9 @@ ngx_spacer=
 ngx_long_regex_cont=$ngx_regex_cont
 ngx_long_cont=$ngx_cont
 
-. auto/cc/name
+. auto/cc/name     # get the cc name, check the complier, then set: NGX_CC_NAME=gcc 
 
-if test -n "$CFLAGS"; then
+if test -n "$CFLAGS"; then      # test not zero(CFLAGS size)
 
     CC_TEST_FLAGS="$CFLAGS $NGX_CC_OPT"
 
@@ -77,7 +77,7 @@ else
             #     3.0.4, 3.1.1, 3.2.3, 3.3.2, 3.3.3, 3.3.4, 3.4.0, 3.4.2
             #     4.0.0, 4.0.1, 4.1.0
 
-            . auto/cc/gcc
+            . auto/cc/gcc       # notice! notice! notice! match this, set the CFLAGS: -pipe -O -W -Wall -Wpointer-arith -Wno-unused-parameter -Werror -g 
         ;;
 
         clang)
@@ -134,12 +134,12 @@ else
 
 fi
 
-CFLAGS="$CFLAGS $NGX_CC_OPT"
-NGX_TEST_LD_OPT="$NGX_LD_OPT"
+CFLAGS="$CFLAGS $NGX_CC_OPT"    # NGX_CC_OPT: null
+NGX_TEST_LD_OPT="$NGX_LD_OPT"   # empty 
 
-if [ "$NGX_PLATFORM" != win32 ]; then
+if [ "$NGX_PLATFORM" != win32 ]; then   # Linux:2.6.32-696.6.3.el6.x86_64:x86_64, true
 
-    if test -n "$NGX_LD_OPT"; then
+    if test -n "$NGX_LD_OPT"; then  # zero, false
         ngx_feature=--with-ld-opt=\"$NGX_LD_OPT\"
         ngx_feature_name=
         ngx_feature_run=no
@@ -157,13 +157,13 @@ if [ "$NGX_PLATFORM" != win32 ]; then
     fi
 
 
-    ngx_feature="gcc builtin atomic operations"
-    ngx_feature_name=NGX_HAVE_GCC_ATOMIC
-    ngx_feature_run=yes
+    ngx_feature="gcc builtin atomic operations" # "checking for $ngx_feature"
+    ngx_feature_name=NGX_HAVE_GCC_ATOMIC        # ngx_auto_config.h: #define NGX_HAVE_GCC_ATOMIC    1
+    ngx_feature_run=yes                         # run the binary
     ngx_feature_incs=
     ngx_feature_path=
     ngx_feature_libs=
-    ngx_feature_test="long  n = 0;
+    ngx_feature_test="long  n = 0;              # the code belowing will be insert to main() { $ngx_feature_test; return 0;}
                       if (!__sync_bool_compare_and_swap(&n, 0, 1))
                           return 1;
                       if (__sync_fetch_and_add(&n, 1) != 1)
@@ -191,7 +191,7 @@ if [ "$NGX_PLATFORM" != win32 ]; then
      fi
 
 
-    ngx_feature="gcc variadic macros"
+    ngx_feature="gcc variadic macros"   # 可变参数宏
     ngx_feature_name="NGX_HAVE_GCC_VARIADIC_MACROS"
     ngx_feature_run=yes
     ngx_feature_incs="#include <stdio.h>

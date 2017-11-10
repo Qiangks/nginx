@@ -9,7 +9,7 @@
 
 
 NGX_GCC_VER=`$CC -v 2>&1 | grep 'gcc version' 2>&1 \
-                         | sed -e 's/^.* version \(.*\)/\1/'`
+                         | sed -e 's/^.* version \(.*\)/\1/'`   # 4.4.7 20120313 (Red Hat 4.4.7-18) (GCC)
 
 echo " + gcc version: $NGX_GCC_VER"
 
@@ -36,7 +36,7 @@ if [ $ngx_found = yes ]; then
 fi
 
 
-case "$NGX_MACHINE" in
+case "$NGX_MACHINE" in      # x86_64, skip
 
     sun4u | sun4v | sparc | sparc64 )
         # "-mcpu=v9" enables the "casa" assembler instruction
@@ -54,7 +54,7 @@ NGX_GCC_OPT="-O"
 
 #CFLAGS="$CFLAGS -fomit-frame-pointer"
 
-case $CPU in
+case $CPU in            # for linux x86_64: NO, skip
     pentium)
         # optimize for Pentium and Athlon
         CPU_OPT="-march=pentium"
@@ -119,23 +119,23 @@ case "$NGX_GCC_VER" in
     ;;
 esac
 
-
-CFLAGS="$CFLAGS $PIPE $CPU_OPT"
+# CFLAGS: PIPE:-pipe CPU_OPT:
+CFLAGS="$CFLAGS $PIPE $CPU_OPT"     # -pipe
 
 if [ ".$PCRE_OPT" = "." ]; then
-    PCRE_OPT="-O2 -fomit-frame-pointer $PIPE $CPU_OPT"
+    PCRE_OPT="-O2 -fomit-frame-pointer $PIPE $CPU_OPT"  # : -O2 -fomit-frame-pointer -pipe
 else
     PCRE_OPT="$PCRE_OPT $PIPE"
 fi
 
-if [ ".$MD5_OPT" = "." ]; then
-    MD5_OPT="-O2 -fomit-frame-pointer $PIPE $CPU_OPT"
+if [ ".$MD5_OPT" = "." ]; then      # true
+    MD5_OPT="-O2 -fomit-frame-pointer $PIPE $CPU_OPT" # : -O2 -fomit-frame-pointer -pipe
 else
     MD5_OPT="$MD5_OPT $PIPE"
 fi
 
 if [ ".$ZLIB_OPT" = "." ]; then
-    ZLIB_OPT="-O2 -fomit-frame-pointer $PIPE $CPU_OPT"
+    ZLIB_OPT="-O2 -fomit-frame-pointer $PIPE $CPU_OPT"  #: -O2 -fomit-frame-pointer -pipe
 else
     ZLIB_OPT="$ZLIB_OPT $PIPE"
 fi
@@ -144,9 +144,9 @@ fi
 # warnings
 
 # -W requires at least -O
-CFLAGS="$CFLAGS ${NGX_GCC_OPT:--O} -W"
+CFLAGS="$CFLAGS ${NGX_GCC_OPT:--O} -W"  #: CFLAGS= -pipe -O -W
 
-CFLAGS="$CFLAGS -Wall -Wpointer-arith"
+CFLAGS="$CFLAGS -Wall -Wpointer-arith"  #: CFLAGS= -pipe -O -W -Wall -Wpointer-arith
 #CFLAGS="$CFLAGS -Wconversion"
 #CFLAGS="$CFLAGS -Winline"
 #CFLAGS="$CFLAGS -Wmissing-prototypes"
@@ -155,7 +155,7 @@ CFLAGS="$CFLAGS -Wall -Wpointer-arith"
 case "$NGX_GCC_VER" in
     3.* | 4.* )
         # we have a lot of the unused function arguments
-        CFLAGS="$CFLAGS -Wno-unused-parameter"
+        CFLAGS="$CFLAGS -Wno-unused-parameter"  #: -pipe -O -W -Wall -Wpointer-arith -Wno-unused-parameter
         # 4.2.1 shows the warning in wrong places
         #CFLAGS="$CFLAGS -Wunreachable-code"
 
@@ -176,11 +176,11 @@ esac
 CFLAGS="$CFLAGS -Werror"
 
 # debug
-CFLAGS="$CFLAGS -g"
+CFLAGS="$CFLAGS -g" # -pipe -O -W -Wall -Wpointer-arith -Wno-unused-parameter -Werror -g
 
 # DragonFly's gcc3 generates DWARF
 #CFLAGS="$CFLAGS -g -gstabs"
 
 if [ ".$CPP" = "." ]; then
-    CPP="$CC -E"
+    CPP="$CC -E"    # cc -E
 fi

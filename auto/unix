@@ -3,11 +3,11 @@
 # Copyright (C) Nginx, Inc.
 
 
-NGX_USER=${NGX_USER:-nobody}
+NGX_USER=${NGX_USER:-nobody}    # nobody
 
-if [ -z "$NGX_GROUP" ]; then
-    if [ $NGX_USER = nobody ]; then
-        if grep nobody /etc/group 2>&1 >/dev/null; then
+if [ -z "$NGX_GROUP" ]; then    # true
+    if [ $NGX_USER = nobody ]; then     # true
+        if grep nobody /etc/group 2>&1 >/dev/null; then # true
             echo "checking for nobody group ... found"
             NGX_GROUP=nobody
         else
@@ -41,7 +41,7 @@ ngx_feature_test="int  n; struct pollfd  pl;
                   if (n == -1) return 1"
 . auto/feature
 
-if [ $ngx_found = no ]; then
+if [ $ngx_found = no ]; then    # false
     EVENT_POLL=NONE
 fi
 
@@ -61,7 +61,7 @@ ngx_feature_test="int  n, dp; struct dvpoll  dvp;
                   if (n == -1) return 1"
 . auto/feature
 
-if [ $ngx_found = yes ]; then
+if [ $ngx_found = yes ]; then   # false
     CORE_SRCS="$CORE_SRCS $DEVPOLL_SRCS"
     EVENT_MODULES="$EVENT_MODULES $DEVPOLL_MODULE"
     EVENT_FOUND=YES
@@ -78,7 +78,7 @@ if test -z "$NGX_KQUEUE_CHECKED"; then
     ngx_feature_test="int kq; kq = kqueue()"
     . auto/feature
 
-    if [ $ngx_found = yes ]; then
+    if [ $ngx_found = yes ]; then   # false, no kqueue
 
         have=NGX_HAVE_CLEAR_EVENT . auto/have
         EVENT_MODULES="$EVENT_MODULES $KQUEUE_MODULE"
@@ -128,7 +128,7 @@ if test -z "$NGX_KQUEUE_CHECKED"; then
 fi
 
 
-if [ "$NGX_SYSTEM" = "NetBSD" ]; then
+if [ "$NGX_SYSTEM" = "NetBSD" ]; then   # false: LINUX
 
     # NetBSD 2.0 incompatibly defines kevent.udata as "intptr_t"
 
@@ -168,7 +168,7 @@ if [ $ngx_found = no ]; then
     ngx_feature_libs=-lcrypt
     . auto/feature
 
-    if [ $ngx_found = yes ]; then
+    if [ $ngx_found = yes ]; then   # true
         CRYPT_LIB="-lcrypt"
     fi
 fi
@@ -383,7 +383,7 @@ ngx_feature_libs=
 ngx_feature_test="accept4(0, NULL, NULL, SOCK_NONBLOCK)"
 . auto/feature
 
-if [ $NGX_FILE_AIO = YES ]; then
+if [ $NGX_FILE_AIO = YES ]; then    # NO
 
     ngx_feature="kqueue AIO support"
     ngx_feature_name="NGX_HAVE_FILE_AIO"
@@ -462,7 +462,7 @@ else
     ngx_feature_test="(void) eventfd(0, 0)"
     . auto/feature
 
-    if [ $ngx_found = yes ]; then
+    if [ $ngx_found = yes ]; then       # true
         have=NGX_HAVE_SYS_EVENTFD_H . auto/have
     fi
 
@@ -495,7 +495,7 @@ ngx_param=NGX_PTR_SIZE; ngx_value=$ngx_size; . auto/types/value
 
 # POSIX types
 
-case "$NGX_AUTO_CONFIG_H" in
+case "$NGX_AUTO_CONFIG_H" in    # $NGX_AUTO_CONFIG_H: objs/ngx_auto_config.h
     /*)
         NGX_INCLUDE_AUTO_CONFIG_H="#include \"$NGX_AUTO_CONFIG_H\""
     ;;

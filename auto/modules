@@ -2,30 +2,30 @@
 # Copyright (C) Igor Sysoev
 # Copyright (C) Nginx, Inc.
 
-
-if [ $EVENT_SELECT = NO -a $EVENT_FOUND = NO ]; then
+#       NO                      YES
+if [ $EVENT_SELECT = NO -a $EVENT_FOUND = NO ]; then    #false
     EVENT_SELECT=YES
 fi
 
-if [ $EVENT_SELECT = YES ]; then
+if [ $EVENT_SELECT = YES ]; then    # false
     have=NGX_HAVE_SELECT . auto/have
     CORE_SRCS="$CORE_SRCS $SELECT_SRCS"
     EVENT_MODULES="$EVENT_MODULES $SELECT_MODULE"
 fi
 
-
-if [ $EVENT_POLL = NO -a $EVENT_FOUND = NO ]; then
+#       NO                  YES
+if [ $EVENT_POLL = NO -a $EVENT_FOUND = NO ]; then  # false
     EVENT_POLL=YES
 fi
 
-if [ $EVENT_POLL = YES ]; then
+if [ $EVENT_POLL = YES ]; then  # false
     have=NGX_HAVE_POLL . auto/have
     CORE_SRCS="$CORE_SRCS $POLL_SRCS"
     EVENT_MODULES="$EVENT_MODULES $POLL_MODULE"
 fi
 
 
-if [ $NGX_TEST_BUILD_DEVPOLL = YES ]; then
+if [ $NGX_TEST_BUILD_DEVPOLL = YES ]; then      # false
     have=NGX_HAVE_DEVPOLL . auto/have
     have=NGX_TEST_BUILD_DEVPOLL . auto/have
     EVENT_MODULES="$EVENT_MODULES $DEVPOLL_MODULE"
@@ -33,14 +33,14 @@ if [ $NGX_TEST_BUILD_DEVPOLL = YES ]; then
 fi
 
 
-if [ $NGX_TEST_BUILD_EVENTPORT = YES ]; then
+if [ $NGX_TEST_BUILD_EVENTPORT = YES ]; then    # false
     have=NGX_HAVE_EVENTPORT . auto/have
     have=NGX_TEST_BUILD_EVENTPORT . auto/have
     EVENT_MODULES="$EVENT_MODULES $EVENTPORT_MODULE"
     CORE_SRCS="$CORE_SRCS $EVENTPORT_SRCS"
 fi
 
-if [ $NGX_TEST_BUILD_EPOLL = YES ]; then
+if [ $NGX_TEST_BUILD_EPOLL = YES ]; then        # false
     have=NGX_HAVE_EPOLL . auto/have
     have=NGX_HAVE_EPOLLRDHUP . auto/have
     have=NGX_HAVE_EVENTFD . auto/have
@@ -49,38 +49,38 @@ if [ $NGX_TEST_BUILD_EPOLL = YES ]; then
     CORE_SRCS="$CORE_SRCS $EPOLL_SRCS"
 fi
 
-if [ $NGX_TEST_BUILD_RTSIG = YES ]; then
+if [ $NGX_TEST_BUILD_RTSIG = YES ]; then        # false
     have=NGX_HAVE_RTSIG . auto/have
     have=NGX_TEST_BUILD_RTSIG . auto/have
     EVENT_MODULES="$EVENT_MODULES $RTSIG_MODULE"
     CORE_SRCS="$CORE_SRCS $RTSIG_SRCS"
 fi
 
-if [ $NGX_TEST_BUILD_SOLARIS_SENDFILEV = YES ]; then
+if [ $NGX_TEST_BUILD_SOLARIS_SENDFILEV = YES ]; then    # NO
     have=NGX_TEST_BUILD_SOLARIS_SENDFILEV . auto/have
     CORE_SRCS="$CORE_SRCS $SOLARIS_SENDFILEV_SRCS"
 fi
 
 
-if [ $HTTP != YES ]; then
+if [ $HTTP != YES ]; then       # $HTTP: YES, false
     have=NGX_CRYPT . auto/nohave
     CRYPT_LIB=
 fi
 
 
-if [ $HTTP_CACHE = YES ]; then
+if [ $HTTP_CACHE = YES ]; then  # $HTTP_CACHE: YES, true
     USE_MD5=YES
     have=NGX_HTTP_CACHE . auto/have
-    HTTP_SRCS="$HTTP_SRCS $HTTP_FILE_CACHE_SRCS"
+    HTTP_SRCS="$HTTP_SRCS $HTTP_FILE_CACHE_SRCS"    # $HTTP_SRCS: src/http/ngx_http.c ... src/http/modules/ngx_http_not_modified_filter_module.c $HTTP_FILE_CACHE_SRCS: src/http/ngx_http_file_cache.c
 fi
 
 
-if [ $HTTP_SSI = YES ]; then
+if [ $HTTP_SSI = YES ]; then    # true
     HTTP_POSTPONE=YES
 fi
 
 
-if [ $HTTP_ADDITION = YES ]; then
+if [ $HTTP_ADDITION = YES ]; then   # false
     HTTP_POSTPONE=YES
 fi
 
@@ -118,11 +118,12 @@ fi
 #     ngx_http_range_body_filter
 #     ngx_http_not_modified_filter
 
+# $HTTP_WRITE_FILTER_MODULE: ngx_http_write_filter_module; $HTTP_HEADER_FILTER_MODULE: ngx_http_header_filter_module ...
 HTTP_FILTER_MODULES="$HTTP_WRITE_FILTER_MODULE \
                      $HTTP_HEADER_FILTER_MODULE \
                      $HTTP_CHUNKED_FILTER_MODULE"
 
-if [ $HTTP_SPDY = YES ]; then
+if [ $HTTP_SPDY = YES ]; then   # false
     HTTP_FILTER_MODULES="$HTTP_FILTER_MODULES $HTTP_SPDY_FILTER_MODULE"
 fi
 
@@ -401,16 +402,16 @@ fi
 #    . $NGX_OBJS/auto
 #fi
 
-
+# add 3rdParty extend module, for example: rtmp module. set by cmd: --add_module=/home/fbq/projects/nginx/modules/nginx-rtmp-module
 if test -n "$NGX_ADDONS"; then
 
     echo configuring additional modules
 
-    for ngx_addon_dir in $NGX_ADDONS
+    for ngx_addon_dir in $NGX_ADDONS    #/home/fbq/projects/nginx/modules/nginx-rtmp-module
     do
         echo "adding module in $ngx_addon_dir"
 
-        if test -f $ngx_addon_dir/config; then
+        if test -f $ngx_addon_dir/config; then #/home/fbq/projects/nginx/modules/nginx-rtmp-module/config
             . $ngx_addon_dir/config
 
             echo " + $ngx_addon_name was configured"
@@ -520,6 +521,7 @@ $NGX_PRAGMA
 
 END
 
+# @remark: very important, generate the objs/ngx_modules.c
 for mod in $modules
 do
     echo "extern ngx_module_t  $mod;"         >> $NGX_MODULES_C

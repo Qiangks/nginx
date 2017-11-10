@@ -13,23 +13,23 @@ export LC_ALL
 
 test -d $NGX_OBJS || mkdir $NGX_OBJS
 
-echo > $NGX_AUTO_HEADERS_H
-echo > $NGX_AUTOCONF_ERR
+echo > $NGX_AUTO_HEADERS_H      # create file: objs/ngx_auto_headers.h
+echo > $NGX_AUTOCONF_ERR        # create file: objs/autoconf.err 
 
-echo "#define NGX_CONFIGURE \"$NGX_CONFIGURE\"" > $NGX_AUTO_CONFIG_H
+echo "#define NGX_CONFIGURE \"$NGX_CONFIGURE\"" > $NGX_AUTO_CONFIG_H    # NGX_CONFIGURE="$opt" objs/ngx_auto_config.h 
 
 
-if [ $NGX_DEBUG = YES ]; then
+if [ $NGX_DEBUG = YES ]; then   # default: NGX_DEBUG = NO, skip
     have=NGX_DEBUG . auto/have
 fi
 
 
-if test -z "$NGX_PLATFORM"; then
+if test -z "$NGX_PLATFORM"; then    # test zero(NGX_PLATFORM length); true
     echo "checking for OS"
 
-    NGX_SYSTEM=`uname -s 2>/dev/null`
-    NGX_RELEASE=`uname -r 2>/dev/null`
-    NGX_MACHINE=`uname -m 2>/dev/null`
+    NGX_SYSTEM=`uname -s 2>/dev/null`   # print the system: Linux
+    NGX_RELEASE=`uname -r 2>/dev/null`  # print the kernel release: 2.6.32-696.6.3.el6.x86_64
+    NGX_MACHINE=`uname -m 2>/dev/null`  # print the machine hardware name: x86_64
 
     echo " + $NGX_SYSTEM $NGX_RELEASE $NGX_MACHINE"
 
@@ -45,21 +45,21 @@ else
     echo "building for $NGX_PLATFORM"
     NGX_SYSTEM=$NGX_PLATFORM
 fi
+# set gcc, and check gcc if support feature: atmoic variadic ...etc. 
+. auto/cc/conf       
 
-. auto/cc/conf
-
-if [ "$NGX_PLATFORM" != win32 ]; then
-    . auto/headers
+if [ "$NGX_PLATFORM" != win32 ]; then   # true
+    . auto/headers    # 检查系统的一些头文件是否存在, 并在ngx_auto_headers.h中定义宏
 fi
 
-. auto/os/conf
+. auto/os/conf  # test some os function, append epoll module/src
 
 if [ "$NGX_PLATFORM" != win32 ]; then
-    . auto/unix
+    . auto/unix #   # test some unix os function, add defination to objs/ngx_auto_config.h
 fi
 
-. auto/threads
-. auto/modules
+. auto/threads  # default: USE_THREADS=NO, skip
+. auto/modules  # add third module,  generate the objs/ngx_modules.c
 . auto/lib/conf
 
 case ".$NGX_PREFIX" in

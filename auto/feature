@@ -16,7 +16,7 @@ ngx_found=no
 
 if test -n "$ngx_feature_name"; then
     ngx_have_feature=`echo $ngx_feature_name \
-                   | tr abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ`
+                   | tr abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ` # for: fbq => FBQ
 fi
 
 if test -n "$ngx_feature_path"; then
@@ -38,16 +38,16 @@ int main() {
 
 END
 
-
+# cc -pipe -o objs/autotest objs/autotest.c  $CC_TEST_FLAGS:-pipe
 ngx_test="$CC $CC_TEST_FLAGS $CC_AUX_FLAGS $ngx_feature_inc_path \
           -o $NGX_AUTOTEST $NGX_AUTOTEST.c $NGX_TEST_LD_OPT $ngx_feature_libs"
 
 ngx_feature_inc_path=
 
-eval "/bin/sh -c \"$ngx_test\" >> $NGX_AUTOCONF_ERR 2>&1"
+eval "/bin/sh -c \"$ngx_test\" >> $NGX_AUTOCONF_ERR 2>&1"   # eval 对后面的cmdLine扫描两遍,保证间接引用的语义.
 
 
-if [ -x $NGX_AUTOTEST ]; then
+if [ -x $NGX_AUTOTEST ]; then   # if ngx_autotest file exist and can run. 
 
     case "$ngx_feature_run" in
 
@@ -100,7 +100,7 @@ END
         ;;
 
         *)
-            echo " found"
+            echo " found"   # for: ngx_feature=gcc -pipe switch ..., match this.
             ngx_found=yes
 
             if test -n "$ngx_feature_name"; then

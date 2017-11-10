@@ -12,7 +12,7 @@ case "$NGX_PLATFORM" in
     ;;
 
     Linux:*)
-        . auto/os/linux
+        . auto/os/linux # notice! match this, add epoll etc. test some feature(posix_fadvise prctl ...), define it's macro
     ;;
 
     SunOS:*)
@@ -76,8 +76,8 @@ case "$NGX_MACHINE" in
         NGX_MACH_CACHE_LINE=32
     ;;
 
-    amd64 | x86_64)
-        have=NGX_HAVE_NONALIGNED . auto/have
+    amd64 | x86_64) # match this
+        have=NGX_HAVE_NONALIGNED . auto/have    # #define NGX_HAVE_NONALIGNED  1
         NGX_MACH_CACHE_LINE=64
     ;;
 
@@ -104,4 +104,4 @@ if test -z "$NGX_CPU_CACHE_LINE"; then
     NGX_CPU_CACHE_LINE=$NGX_MACH_CACHE_LINE
 fi
 
-have=NGX_CPU_CACHE_LINE value=$NGX_CPU_CACHE_LINE . auto/define
+have=NGX_CPU_CACHE_LINE value=$NGX_CPU_CACHE_LINE . auto/define # ngx_auto_config.h: #define NGX_CPU_CACHE_LINE  64

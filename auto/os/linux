@@ -3,17 +3,17 @@
 # Copyright (C) Nginx, Inc.
 
 
-have=NGX_LINUX . auto/have_headers
+have=NGX_LINUX . auto/have_headers  # #ifndef NGX_LINUX \ #define NGX_LINUX 1 \ #endif
 
-CORE_INCS="$UNIX_INCS"
-CORE_DEPS="$UNIX_DEPS $LINUX_DEPS"
-CORE_SRCS="$UNIX_SRCS $LINUX_SRCS"
+CORE_INCS="$UNIX_INCS"      # src/core src/event src/event/modules src/os/unix
+CORE_DEPS="$UNIX_DEPS $LINUX_DEPS"  # src/core/nginx.h ... src/os/unix/ngx_linux.h
+CORE_SRCS="$UNIX_SRCS $LINUX_SRCS"  # src/core/nginx.c ... src/os/unix/ngx_linux_init.c
 
 ngx_spacer='
 '
 
-cc_aux_flags="$CC_AUX_FLAGS"
-CC_AUX_FLAGS="$cc_aux_flags -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64"
+cc_aux_flags="$CC_AUX_FLAGS"    # null
+CC_AUX_FLAGS="$cc_aux_flags -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64"   # -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64
 
 
 # Linux kernel version
@@ -39,8 +39,8 @@ fi
 
 
 # posix_fadvise64() had been implemented in 2.5.60
-
-if [ $version -lt 132412 ]; then
+# @see: http://blog.yufeng.info/archives/1917
+if [ $version -lt 132412 ]; then    # centos6.9: 2.6.32-696.6.3.el6.x86_64: 2*256*256+6*256+32=132640
     have=NGX_HAVE_POSIX_FADVISE . auto/nohave
 fi
 
@@ -62,8 +62,8 @@ ngx_feature_test="int efd = 0;
 
 if [ $ngx_found = yes ]; then
     have=NGX_HAVE_CLEAR_EVENT . auto/have
-    CORE_SRCS="$CORE_SRCS $EPOLL_SRCS"
-    EVENT_MODULES="$EVENT_MODULES $EPOLL_MODULE"
+    CORE_SRCS="$CORE_SRCS $EPOLL_SRCS"  # EPOLL_SRCS: src/event/modules/ngx_epoll_module.c
+    EVENT_MODULES="$EVENT_MODULES $EPOLL_MODULE"    # EPOLL_MODULE: ngx_epoll_module
     EVENT_FOUND=YES
 
 
@@ -85,7 +85,7 @@ fi
 
 
 # O_PATH and AT_EMPTY_PATH were introduced in 2.6.39, glibc 2.14
-
+# @see: http://blog.csdn.net/xie0812/article/details/51483635
 ngx_feature="O_PATH"
 ngx_feature_name="NGX_HAVE_O_PATH"
 ngx_feature_run=no
@@ -101,7 +101,7 @@ ngx_feature_test="int fd; struct stat sb;
 
 
 # sendfile()
-
+# @see: man sednfile
 CC_AUX_FLAGS="$cc_aux_flags -D_GNU_SOURCE"
 ngx_feature="sendfile()"
 ngx_feature_name="NGX_HAVE_SENDFILE"
@@ -141,7 +141,7 @@ ngx_feature_test="int s = 0, fd = 1;
 ngx_include="sys/prctl.h"; . auto/include
 
 # prctl(PR_SET_DUMPABLE)
-
+# @see: man prctl
 ngx_feature="prctl(PR_SET_DUMPABLE)"
 ngx_feature_name="NGX_HAVE_PR_SET_DUMPABLE"
 ngx_feature_run=yes
